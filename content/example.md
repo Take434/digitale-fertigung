@@ -5,7 +5,7 @@ tags:
   -
 ---
 ## This is another page
-it includes some things not included in the [[content/index|index]]
+it includes some things not included in the [[index]]
 
 #### like lists
 - wow, a cool
@@ -21,3 +21,19 @@ and use *checkmarks*
 - [ ] me 
 - [ ] as 
 - [ ] completed
+
+We should also try code:
+
+~~~python
+print("Hello World!")
+
+func test():
+	# This is a cool test function
+	print("I am testing")
+
+test()
+~~~
+
+ ```java
+ System.Out.Println("Hello World!");
+ ```
