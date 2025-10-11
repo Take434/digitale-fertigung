@@ -1,6 +1,4 @@
 ---
-title: Welcome to Quartz
+title: Digital Fabrication Blog
 ---
-
-This is a blank Quartz installation.
-See the [documentation](https://quartz.jzhao.xyz) for how to get started.
+This Blog documents all tasks done during the university course "fundamentals of digital fabrication" and was created by Tim Herr (32060).
