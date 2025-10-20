@@ -4,8 +4,9 @@ draft: false
 tags:
   -
 ---
- For my final Project I would like to create something using an old Filp-Dot display which I already have. The goal is to mount the display to the wall, preferably in a nice wooden frame and have it display something. The complexity of the project varies greatly depending on the things I would like to display, so I will start with the time and date.
+For my final Project I would like to create something using an old Filp-Dot display which I already have. The goal is to mount the display to the wall, preferably in a nice wooden frame and have it display something. The complexity of the project varies greatly depending on the things I would like to display, so I will start with the time and date.
  ![[files/Flip-Dot.png]]
+ ![[content/files/finalProjectSketch/39.png]]
 ## Components of the Project
 This is my first idea of the things I need to built for this project.
 
