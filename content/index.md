@@ -7,3 +7,4 @@ This Blog documents all tasks done during the university course "fundamentals of
 This course includes weekly assignments, which will be documented in this blog. The assignments can be found under "/Weekly Assignments" and the following is a chronological list of all assignments (they will be added consecutively): 
 - [[Week 1]]: Creating the documentation
 - [[Week 2]]: Fusion 360
+- [[Week 3]]: 3D Printing
