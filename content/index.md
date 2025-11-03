@@ -8,3 +8,4 @@ This course includes weekly assignments, which will be documented in this blog. 
 - [[Week 1]]: Creating the documentation
 - [[Week 2]]: Fusion 360
 - [[Week 3]]: 3D Printing
+- [[Week 4]]: Laser Cutting
