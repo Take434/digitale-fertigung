@@ -9,3 +9,7 @@ This course includes weekly assignments, which will be documented in this blog. 
 - [[Week 2]]: Fusion 360
 - [[Week 3]]: 3D Printing
 - [[Week 4]]: Laser Cutting
+- [[Week 5]]: CNC Milling
+- [[Week 6]]: Embedded Programming
+- [[Week 7]]: Electronics Production
+- [[Week 8]]: Electronics Design
