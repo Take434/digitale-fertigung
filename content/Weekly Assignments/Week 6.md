@@ -7,6 +7,7 @@ tags:
 # Tinker CAD 
 
 ## LED Control
+https://www.tinkercad.com/things/5jIxxLDL1OE-led-address?sharecode=ZzfQ8HE0A_rFtyqUWMIS7ii4qkZixvuxi3DH0F1pdDk
 ![[Pasted image 20251213140103.png]]
 ```c++
 const int leds[] = {13, 8, 12, 4};
@@ -79,6 +80,7 @@ void loop()
 }
 ```
 ## Game
+https://www.tinkercad.com/things/lD81J6AEcYi-led-game?sharecode=x9mwJBXvOk8ahh_LDPndv0l1P7Svc5v7x9HzOWpI7qc
 ![[Pasted image 20251213140017.png]]
 ```c++
 const int leds[] = {13, 12, 11, 10};
@@ -96,6 +98,10 @@ int currentLevel = 0;
 int levelPreviewCounter = 0;
 bool levelPreviewOn = false;
 unsigned long levelPreviewStartTime;
+int inputCounter = 0;
+bool failed = false;
+int pollLed = -1;
+unsigned long pollLedStartTime;
 
 const int levels[7][6] = {
   {0, 0, 0, 0, 0, 1},
@@ -106,6 +112,10 @@ const int levels[7][6] = {
   {2, 2, 1, 2, 1, 1},  
   {0, 1, 0, 2, 0, 3}
 };
+
+unsigned long winLedStartTime;
+bool winLedsOn = false;
+int winCount = 0;
 
 void setup()
 {
@@ -121,15 +131,46 @@ void setup()
 }
 
 void loop()
-{
-  if(canInput) {
-    pollBtns();
-  } else if (animation) {
-    //play animation
-  } else {
-  	showLevel(currentLevel);
+{  
+  if(pollLed >= 0 && (millis() - pollLedStartTime) > blinkDuration) {
+  	digitalWrite(leds[pollLed], LOW);
+    pollLed = -1;
   }
-    
+  
+  if(pollLed < 0) {
+    if(canInput) {
+      pollBtns();
+    } else if (animation) {
+      winAnimation();  
+    } else {
+      showLevel(currentLevel);
+    }
+  }
+}
+
+void winAnimation() {
+  if((millis() - winLedStartTime) > blinkDuration) {
+    if(!winLedsOn) {
+      for(int i = 0; i < sizeof(leds) / sizeof(leds[0]); i++) {
+        digitalWrite(leds[i], HIGH);
+      }
+      winLedsOn = true;
+	  winLedStartTime = millis();
+    } else {
+      for(int i = 0; i < sizeof(leds) / sizeof(leds[0]); i++) {
+        digitalWrite(leds[i], LOW);
+      }
+      winLedStartTime = millis();
+      winCount++;
+      winLedsOn = false;
+    }
+  }
+  
+  if(winCount == 3) {
+  	animation = false;
+    currentLevel = 0;
+    winCount = 0;
+  }
 }
 
 void showLevel(int i) {
@@ -165,9 +206,33 @@ void pollBtns() {
         
         if(btnStates[i] == HIGH) {
           Serial.println(i);
-          canInput = false;
-          currentLevel = 1;
-          levelPreviewCounter = 0;
+          Serial.println(levels[currentLevel][inputCounter]);
+          
+          if(i != levels[currentLevel][inputCounter]) {
+          	failed = true;
+          }
+          
+          inputCounter++;
+          pollLed = i;
+          digitalWrite(leds[pollLed], HIGH);
+          pollLedStartTime = millis();
+          
+          
+          if(inputCounter >= 6) {
+          	canInput = false;
+            inputCounter = 0;
+            levelPreviewCounter = 0;
+            
+            if(!failed) {
+              currentLevel++;
+              
+              if(currentLevel > 6) {
+              	animation = true;
+              }
+            }
+            
+            failed = false;
+          }
         }
       }
     }
