@@ -19,3 +19,9 @@ https://www.amazon.de/sourcing-map-Flachbandkabel-Stecker-Abstand/dp/B07SWJH7DF
 https://www.reichelt.de/de/de/shop/produkt/mosfet_n-logl_30v_86a_0_0058r_to252aa-254838?search=IRLR8726&
 
 https://www.digikey.de/de/products/detail/texas-instruments/lm340mpx-5-0-nopb/367021?_gl=1*8jtwim*_up*MQ..*_gs*MQ..&gclid=Cj0KCQiArt_JBhCTARIsADQZaykTTG1ZNrvjT8GBAVe2rledYsfHU3jME8hS58xY8ynrQ0BKBolanuEaAg1XEALw_wcB&gclsrc=aw.ds&gbraid=0AAAAADrbLlhe6aXNQm53MHciUciWaB_mp
+
+https://www.reichelt.com/de/en/shop/product/developer_boards_-_joystick_module-376780
+
+
+WIP PCB:
+[[digiFabFinal.zip]]
