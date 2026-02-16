@@ -5,8 +5,8 @@ tags:
   -
 ---
 # Poster
-
-
+![[digiFabPoster.png]]
+Or view the Poster here [[digiFabPoster.png]]
 # Video
 ![[final-pres.mov]]
 # Presentation
@@ -36,10 +36,8 @@ My Idea was to control this display using my own controller board. Then I wanted
 The first step was understanding the Flipdot module. This was problematic since I could not find any official documentation online. The only thing I managed to find was [this blog](https://radow.org/flip-dot.php) by Rainer Radow, documenting the functionality of the module. While it helped me tremendously it was not really exhaustive and I still had to do a lot of testing to figure out how to address my module.
 ## How Does the Module work?
 So, in order to understand how the Flipdot module works, we need to understand a single dot first.
-<div style="width: 100%; height: 400px; background-color: gray; display: flex">
-<div style="margin: auto; color: black; font-weight: 800;">Close Up Pic of a single dot and the coils beneath</div>
-</div>
-This is a single dot, it is made up of three things:
+![[coils.png]]
+A single dot is made up of three things:
 1. A magnetic top plate, black on one side yellow on the other
 2. Two coils with an iron core forming an electro magnet
 3. Two connections to the underlying board
@@ -53,9 +51,7 @@ The individual dots are addressed via rows and columns:
 Here you can see how four dots (`L1` to `L4`) are addressed in the matrix. Every column (`X_SPALTE`) has one connection and every row (`Y_ZEILE`) has two. Each dot has two diodes making sure the signal flows from row to column and not between the two row connections.
 Two flip a dot you have to connect one of the rows and the column. This way the polarity of the signal can be switched depending on the connected row and the polarity of the column.
 
-<div style="width: 100%; height: 400px; background-color: gray; display: flex">
-<div style="margin: auto; color: black; font-weight: 800;">Testing one specific dot with my lab supply</div>
-</div>
+![[testing-one.png]]
 This is me testing one specific dot using my lab power supply to control the voltage. At least 9 Volts are needed for the dot to flip, 12V produce a good, fast flip. According to Radow, 24V were used in busses and such.
 ## How to Address the Module
 Now that we understand the basic functionality of the module we need to discuss how to address it properly. Beside the matrix itself the module also the following other components:
@@ -64,22 +60,16 @@ Now that we understand the basic functionality of the module we need to discuss 
 - A Chip to drive the columns
 These components need to be understood to address the module correctly. [Radow's blog](https://radow.org/flip-dot.php) helped a lot with this, but I also needed to test many of these components myself to actually understand them.
 ### The Comparator Logic
-<div style="width: 100%; height: 400px; background-color: gray; display: flex">
-<div style="margin: auto; color: black; font-weight: 800;">Image of the comparator set to 1 off everything else on</div>
-</div>
+![[comparator.png]]
 The Comparator can be neglected in this case. It was used to determine which module should be addressed when they were placed in series. In my case the first switch needs to be off and everything else should be on (according to Radow's blog and my testing).
 ### The FP2840 Chip
-<div style="width: 100%; height: 400px; background-color: gray; display: flex">
-<div style="margin: auto; color: black; font-weight: 800;">Image of the Chip placed on the Display and the pinout next to it (photoshopped)</div>
-</div>
+![[chip.png]]
 This chip controls all 28 columns of the display. It is a "one of 28" decoder and was used to drive 7-segment displays. Depending on 6 Inputs It provides a positiv or negativ output on one of the 28 output pins. The truth table can be found in the datasheet: [[fp2800-datasheet.pdf]].
 
 According to Radow's blog, this chip is at risk if the electrical impulse is not timed correctly since it switches the actual 12V driving the dots. Because of this I elected to test the board without the chip, rather switching with jumper cables instead.
 ![[IMG_3589.png]]
 ### The 60pin Connector
-<div style="width: 100%; height: 400px; background-color: gray; display: flex">
-<div style="margin: auto; color: black; font-weight: 800;">Image of the 60pin connector (on board)</div>
-</div>
+![[connector.png]]
 This connector is what I have to actually address to drive the display. Most BROSE modules have two, one input and one output to drive them in series. If there are two, the left one is the input connector.
 
 Most of the pins on this connector are used to address the rows of the display directly. There are 40 total connections for 20 possible rows since each row has one negativ and one positiv connection (as was explained above [[#How Does the Module work?]]). My module only has 16 rows so 8 pins are actually not connected. 
@@ -189,9 +179,7 @@ I then went ahead and designed a case for the joystick in Fusion360
 ![[Pasted image 20260216173811.png]]
 To 3D print the case I split it in two in the Bambulab Slicer. I then printed it at home on my Bambulab A1 and assembled it in the Fab lab, using the Dremel widen the holes to fit the pins.
 
-<div style="width: 100%; height: 400px; background-color: gray; display: flex">
-<div style="margin: auto; color: black; font-weight: 800;">Image of the Joystick in the case</div>
-</div>
+![[stick.png]]
 I had to remove some of the cover so that it would not hit the case.
 # The Case
 ![[Pasted image 20260216174229.png]]
@@ -201,9 +189,7 @@ I then Laser cut the box on the large laser cutter in the Fab Lab.
 ![[IMG_3806.png]]
 This is a first test cut of the backplate.
 
-<div style="width: 100%; height: 400px; background-color: gray; display: flex">
-<div style="margin: auto; color: black; font-weight: 800;">Good image of the case</div>
-</div>
+![[case.png]]
 
 After that I set out to create spacers that would hold the display up and allow for space underneath where the circuits are mounted. These are just blocks with the correctly measured dimensions. I also created nice angled feet for the case so that it could stand upright.
 ![[Unbenannt.png]]
