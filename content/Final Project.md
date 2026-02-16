@@ -1,205 +1,112 @@
 ---
-title: How to publish Obsidian notes with Quartz on GitHub Pages
+title: Final Project - Flipping Dots
 draft: false
 tags:
-  - 
+  -
 ---
-TOC
-- Poster
-- Understanding the BROSE Flipdot Module
-	- The 60pin Connector
-	- The FP2022 Chip
-- Designing the Boards
-	- Controller Board
-	- Decoder Board
-- Manufacturing the Controller Board
-- The Joystick and Case
-- Problems with the Decoder Board, Changes for v2
-- Problems with v2, Changes for v3
+# Poster
+
+# Presentation
+This is the presentation I held in front of the class to explain my project to everyone.
+Everything in it will be explained on this page, it is only included for completeness.
+![[finalProjectPresentation.pdf]]
+# Artifacts
+Controller Board KiCad Project (also includes schematic for decoder):
+![[content/files/finalProject/digiFabFinal.zip|digiFabFinal]]
+Decoder Board KiCad Project:
+![[digiFabFinal-decoder.zip]]
+Spacer Blocks Fusion Archive:
+![[flipdot-spacers.f3d]]
+Case Stand Fusion Archive:
+![[flipdot-stand.f3d]]
+Case design for laser cutting:
+![[box-all-correct.dxf]]
+# The Idea (again)
+This is just a quick reiteration of my final project Idea. The full description can be found in [[Final Project Idea]].
+
+For my final project I wanted to turn an old Flipdot module I had bought off of Ebay into a functional display. This module was produced by the company BROSE and used mostly as a display in busses. Nowadays Flipdot modules are not really produced anymore.
+
+My Idea was to control this display using my own controller board. Then I wanted to include a joystick and make it possible to play snake on the display.
+# Understanding the BROSE Flipdot Module
+The first step was understanding the Flipdot module. This was problematic since I could not find any official documentation online. The only thing I managed to find was [this blog](https://radow.org/flip-dot.php) by Rainer Radow, documenting the functionality of the module. While it helped me tremendously it was not really exhaustive and I still had to do a lot of testing to figure out how to address my module.
+## How Does the Module work?
+So, in order to understand how the Flipdot module works, we need to understand a single dot first.
+<div style="width: 100%; height: 400px; background-color: gray; display: flex">
+<div style="margin: auto; color: black; font-weight: 800;">Close Up Pic of a single dot and the coils beneath</div>
+</div>
+This is a single dot, it is made up of three things:
+1. A magnetic top plate, black on one side yellow on the other
+2. Two coils with an iron core forming an electro magnet
+3. Two connections to the underlying board
+The dot is either yellow or black and stays that way because of the polarity of the electro magnet beneath. In order to flip the dot, the two connections have to be powered to reverse the magnets polarity. It is important to only give a quick impulse to the dot otherwise the coils might be damaged.
+
+The module is made up of 448 dots, arranged into a 16 x 28 matrix.
+The individual dots are addressed via rows and columns:
+![[Pasted image 20260216123038.png]]
+	_Image from: https://radow.org/flip-dot.php, all rights belong to Rainer Radow_
+
+Here you can see how four dots (`L1` to `L4`) are addressed in the matrix. Every column (`X_SPALTE`) has one connection and every row (`Y_ZEILE`) has two. Each dot has two diodes making sure the signal flows from row to column and not between the two row connections.
+Two flip a dot you have to connect one of the rows and the column. This way the polarity of the signal can be switched depending on the connected row and the polarity of the column.
+
+<div style="width: 100%; height: 400px; background-color: gray; display: flex">
+<div style="margin: auto; color: black; font-weight: 800;">Testing one specific dot with my lab supply</div>
+</div>
+This is me testing one specific dot using my lab power supply to control the voltage. At least 9 Volts are needed for the dot to flip, 12V produce a good, fast flip. According to Radow, 24V were used in busses and such.
+## How to Address the Module
+Now that we understand the basic functionality of the module we need to discuss how to address it properly. Beside the matrix itself the module also the following other components:
+- A 60pin Connector
+- Comparator logic for module selection
+- A Chip to drive the columns
+These components need to be understood to address the module correctly. [Radow's blog](https://radow.org/flip-dot.php) helped a lot with this, but I also needed to test many of these components myself to actually understand them.
+### The Comparator Logic
+<div style="width: 100%; height: 400px; background-color: gray; display: flex">
+<div style="margin: auto; color: black; font-weight: 800;">Image of the comparator set to 1 off everything else on</div>
+</div>
+The Comparator can be neglected in this case. It was used to determine which module should be addressed when they were placed in series. In my case the first switch needs to be off and everything else should be on (according to Radow's blog and my testing).
+### The FP2840 Chip
+<div style="width: 100%; height: 400px; background-color: gray; display: flex">
+<div style="margin: auto; color: black; font-weight: 800;">Image of the Chip placed on the Display and the pinout next to it (photoshopped)</div>
+</div>
+This chip controls all 28 columns of the display. It is a "one of 28" decoder and was used to drive 7-segment displays. Depending on 6 Inputs It provides a positiv or negativ output on one of the 28 output pins. The truth table can be found in the datasheet: [[fp2800-datasheet.pdf]].
+
+According to Radow's blog, this chip is at risk if the electrical impulse is not timed correctly since it switches the actual 12V driving the dots. Because of this I elected to test the board without the chip, rather switching with jumper cables instead.
+<div style="width: 100%; height: 400px; background-color: gray; display: flex">
+<div style="margin: auto; color: black; font-weight: 800;">Image of me testing with jumper cables</div>
+</div>
+### The 60pin Connector
+<div style="width: 100%; height: 400px; background-color: gray; display: flex">
+<div style="margin: auto; color: black; font-weight: 800;">Image of the 60pin connector (on board)</div>
+</div>
+This connector is what I have to actually address to drive the display. Most BROSE modules have two, one input and one output to drive them in series. If there are two, the left one is the input connector.
+
+Most of the pins on this connector are used to address the rows of the display directly. There are 40 total connections for 20 possible rows since each row has one negativ and one positiv connection (as was explained above [[#How Does the Module work?]]). My module only has 16 rows so 8 pins are actually not connected. 
+![[Pasted image 20260216132740.png]]
+	_Image from: https://radow.org/flip-dot.php, all rights belong to Rainer Radow_
+
+The other pins are used to address the chip and the comparator logic.
+# Actually Flipping Dots (Testing)
+To actually flip a single dot (while not using the chip), you need to do the following:
+
+|                      | 60pin Connector                                  | Chip                 |
+| -------------------- | ------------------------------------------------ | -------------------- |
+| From black to yellow | 12V connected to SET-X<br>GND connected to GND   | GND connected to row |
+| From yellow to black | GND connected to RESET-X<br>12V connected to 12V | VS connected to row  |
+But how could I achieve this with a microcontroller? There needed to be something to switch the 12 Volts and GND. For the first Initial Tests Ahmed provided me with a Motor Diver IC:
 
 
+# Designing the Boards
 
+## Controller Board
 
+## Decoder Board
 
+# Manufacturing the Controller Board
 
-Tests mit einem NPN Transistor und NPN MosFET
+# The Joystick and Case
 
+# The Code
 
-![[Pasted image 20251209151758.png]]
+# Problems with the Decoder Board, Changes for v2
 
-BOM:
-https://www.reichelt.com/de/en/shop/product/pin_connector_60-pin_with_interlock_straight-14878?country=de&CCTYPE=private&LANGUAGE=en
+# Problems with v2, Changes for v3
 
-https://www.reichelt.de/de/de/shop/produkt/decoder_mpx_decimal_3_15_v_dip-16-12587
-
-https://www.amazon.de/sourcing-map-Flachbandkabel-Stecker-Abstand/dp/B07SWJH7DF
-
-https://www.reichelt.de/de/de/shop/produkt/mosfet_n-logl_30v_86a_0_0058r_to252aa-254838?search=IRLR8726&
-
-https://www.digikey.de/de/products/detail/texas-instruments/lm340mpx-5-0-nopb/367021?_gl=1*8jtwim*_up*MQ..*_gs*MQ..&gclid=Cj0KCQiArt_JBhCTARIsADQZaykTTG1ZNrvjT8GBAVe2rledYsfHU3jME8hS58xY8ynrQ0BKBolanuEaAg1XEALw_wcB&gclsrc=aw.ds&gbraid=0AAAAADrbLlhe6aXNQm53MHciUciWaB_mp
-
-https://www.reichelt.com/de/en/shop/product/developer_boards_-_joystick_module-376780
-
-
-WIP PCB:
-[[digiFabFinal.zip]]
-
-
-
-
-
-Truth Table
-
-| 2   | 7   | 6   | 5   | 4   | 3   | OUTPUT |
-| --- | --- | --- | --- | --- | --- | ------ |
-| 0   | x   | x   | x   | x   | x   | /      |
-| 1   | 0   | 0   | 0   | 0   | 0   | PMOS1  |
-| 1   | 0   | 0   | 0   | 0   | 1   | PMOS2  |
-| 1   | 0   | 0   | 0   | 1   | 0   | PMOS3  |
-| 1   | 0   | 0   | 0   | 1   | 1   | PMOS4  |
-| 1   | 0   | 0   | 1   | 0   | 0   | PMOS5  |
-| 1   | 0   | 0   | 1   | 0   | 1   | PMOS6  |
-| 1   | 0   | 0   | 1   | 1   | 0   | PMOS7  |
-| 1   | 0   | 0   | 1   | 1   | 1   | PMOS8  |
-| 1   | 0   | 1   | 0   | 0   | 0   | PMOS9  |
-| 1   | 0   | 1   | 0   | 0   | 1   | PMOS10 |
-| 1   | 0   | 1   | 0   | 1   | 0   | PMOS11 |
-| 1   | 0   | 1   | 0   | 1   | 1   | PMOS12 |
-| 1   | 0   | 1   | 1   | 0   | 0   | PMOS13 |
-| 1   | 0   | 1   | 1   | 0   | 1   | PMOS14 |
-| 1   | 0   | 1   | 1   | 1   | 0   | PMOS15 |
-| 1   | 0   | 1   | 1   | 1   | 1   | PMOS16 |
-| 1   | 1   | 0   | 0   | 0   | 0   | NMOS1  |
-| 1   | 1   | 0   | 0   | 0   | 1   | NMOS2  |
-| 1   | 1   | 0   | 0   | 1   | 0   | NMOS3  |
-| 1   | 1   | 0   | 0   | 1   | 1   | NMOS4  |
-| 1   | 1   | 0   | 1   | 0   | 0   | NMOS5  |
-| 1   | 1   | 0   | 1   | 0   | 1   | NMOS6  |
-| 1   | 1   | 0   | 1   | 1   | 0   | NMOS7  |
-| 1   | 1   | 0   | 1   | 1   | 1   | NMOS8  |
-| 1   | 1   | 1   | 0   | 0   | 0   | NMOS9  |
-| 1   | 1   | 1   | 0   | 0   | 1   | NMOS10 |
-| 1   | 1   | 1   | 0   | 1   | 0   | NMOS11 |
-| 1   | 1   | 1   | 0   | 1   | 1   | NMOS12 |
-| 1   | 1   | 1   | 1   | 0   | 0   | NMOS13 |
-| 1   | 1   | 1   | 1   | 0   | 1   | NMOS14 |
-| 1   | 1   | 1   | 1   | 1   | 0   | NMOS15 |
-| 1   | 1   | 1   | 1   | 1   | 1   | NMOS16 |
-0 ... 15 => PMOS1 ... PMOS16
-16 ... 31 => NMOS1 ... NMOS 16
-
-
-
-
-Code draft
-```c++
-//pins to address flip dot (via hbridge)
-int hBridge1 = 5;
-int hBridge2 = 4;
-int hBridge3 = 3;
-int hBridge4 = 2;
-
-//pins to read joystick
-int stickPressed = 8;
-int stickX = A0;
-int stickY = A1;
-
-//stick variables
-int buttonState;
-int lastButtonState = LOW;
-unsigned long lastDebounceTime = 0;
-unsigned long debounceDelay = 50;
-unsigned long lastStickInputR = 0;
-unsigned long lastStickInputL = 0;
-unsigned long lastStickInputU = 0;
-unsigned long lastStickInputD = 0;
-int joystickTimeout = 1000;
-
-
-void setup() {
-  pinMode(hBridge1, OUTPUT);
-  pinMode(hBridge2, OUTPUT);
-  pinMode(hBridge3, OUTPUT);
-  pinMode(hBridge4, OUTPUT);
-  pinMode(8, INPUT);
-
-  resetHBridge();
-
-  Serial.begin(9600);
-}
-
-void loop() {
-  if(buttonPressed()) {
-    Serial.println("pressed");
-  }
-
-  handleJoystick();
-}
-
-void resetHBridge() {
-  digitalWrite(hBridge1, LOW);
-  digitalWrite(hBridge2, HIGH);
-  digitalWrite(hBridge3, LOW);
-  digitalWrite(hBridge4, HIGH);
-}
-
-bool buttonPressed() {
-  int buttonReading = digitalRead(stickPressed);
-  if (buttonReading != lastButtonState) {
-    lastDebounceTime = millis();
-  }
-
-  if((millis() - lastDebounceTime) > debounceDelay) {
-    if(buttonReading != buttonState) {
-      buttonState = buttonReading;
-      if (buttonState == HIGH){
-        lastButtonState = buttonReading;
-        return true;
-      }
-    }
-  }
-
-  lastButtonState = buttonReading;
-  return false;
-}
-
-void handleJoystick() {
-  int joystickXRead = analogRead(A0);
-  int joystickYRead = analogRead(A1);
-  int x = ceil(3.0 * joystickXRead / 1023.0) - 2;
-  int y = ceil(3.0 * joystickYRead / 1023.0) - 2;
-
-  if(x != 0) {
-    if(x > 0 && millis() - lastStickInputR > joystickTimeout) {
-      Serial.println("right");
-      resetLastStickInputs();
-      lastStickInputR = millis();
-    } else if(x < 0 && millis() - lastStickInputL > joystickTimeout) {
-      Serial.println("left");
-      resetLastStickInputs();
-      lastStickInputL = millis();
-    }
-  } else if (y != 0) {
-    if(y > 0 && millis() - lastStickInputD > joystickTimeout) {
-      Serial.println("down");
-      resetLastStickInputs();
-      lastStickInputD = millis();
-    } else if(y < 0 && millis() - lastStickInputU > joystickTimeout) {
-      Serial.println("up");
-      resetLastStickInputs();
-      lastStickInputU = millis();
-    }
-  }
-
-  else {
-    resetLastStickInputs();
-  }
-} 
-
-void resetLastStickInputs() {
-  lastStickInputR = 0;
-  lastStickInputL = 0;
-  lastStickInputU = 0;
-  lastStickInputD = 0;
-}
-```
