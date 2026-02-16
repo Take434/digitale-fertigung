@@ -8,7 +8,7 @@ This weeks assignment was milling and soldering an USB to Serial converter. The 
 
 ![[eprod.png]]
 
-This is the board. Since there were some problems with the mill not every student got to mill their own boards. Because of that this page will focus on the soldering and milling will be explained during the fabrication of the final project.
+This is the board. Since there were some problems with the mill not every student got to mill their own boards. Because of that this page will focus on the soldering and milling will be explained during the fabrication of the [[Final Project]].
 
 ![[eprod01.png]]
 

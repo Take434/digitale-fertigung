@@ -4,7 +4,7 @@ draft: false
 tags:
   -
 ---
-# Poster
+![[IMG_3774.png]]# Poster
 
 # Presentation
 This is the presentation I held in front of the class to explain my project to everyone.
@@ -141,8 +141,36 @@ This is the resulting PCB, I also used two layers to make routing simpler and th
 
 The full KiCad Project for this Board is linked above, in [[#Artifacts]].
 # Manufacturing the Controller Board
+After I had finished designing the Controller Board it was time to actually mill and solder it. For this it was important to have selected the correct track width and via diameter for the machine in the FabLab otherwise manufacturing the board would not work.
+## Milling the Board
+First I exported the production (Gerber) files in KiCad. I then went to the machine and opened them there in the Milling Software. Then I placed the material onto the milling bed, taped it down and positioned the circuit design within the software so that it fit onto the material (this was done using the tools as markers where the material was). After that I chose the material to be milled and the tools for the different operations. Then I started the Board Production Wizard.
 
+The first step was to select where to place the fiducials that would allow flipping the board correctly. Then the mill made a test cut and I needed confirm the offset it calculated from that. 
+After that I could start the milling process.
+![[circuit-milling.mov]]
+This is the start of the milling process, the machine begins by drilling the wholes for the through hole components.
 
+![[IMG_3771.png]]
+This is the milling progress viewed in the milling software.
+
+![[IMG_3773.png]]
+This is the result for the first side of the PCB, now I had to flip it and let the machine reorient itself using the fidicules.
+
+![[IMG_3774.png]]
+And this is the finished PCB.
+## Adding the VIAs
+Now that the PCB is milled, it is time to put in the VIAs. These are needed to establish connection between the front and back side of the PCB.
+
+![[IMG_3775.png]]
+Placing the VIAs manually requires first aligning them with the drilled hole and then pressing them with the machine on the left. This also crumples the VIAs so that they can not be removed again.
+After that I tested the connection between the two sides and added solder where it was necessary.
+## Soldering
+Now the board is prepared for soldering.
+![[IMG_3790.png]]
+First I assembled my components. Then I got started soldering.
+
+![[IMG_3793(1).png]]
+I started by soldering the Chip onto the board since this is definitely the hardest part. After I managed to install that correctly I soldered everything else. While soldering I tested the connections with my multimeter. As you can see the GPIO Expander had not yet arrived, I soldered that at home.  
 # The Joystick and Case
 
 # The Code

@@ -26,6 +26,9 @@ tags:
 	- [x] Controller Board
 	- [x] Decoder Board
 - [ ] Manufacturing the Controller Board
+	- [x] Milling the Board
+	- [x] Adding the VIAs
+	- [ ] Soldering
 - [ ] The Joystick and Case
 - [ ] The Code
 - [ ] Problems with the Decoder Board, Changes for v2
