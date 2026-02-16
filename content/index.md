@@ -13,3 +13,5 @@ This course includes weekly assignments, which will be documented in this blog. 
 - [[Week 6]]: Embedded Programming
 - [[Week 7]]: Electronics Production
 - [[Week 8]]: Electronics Design
+# Final Project
+The most important part of this course is the final project. It is developed of the course of the semester and makes up a good part of the grade. It should incorporate at least three different techniques learned during the weekly assignments. My final project is documented here: [[Final Project]]. The page details everything about the final project, including the poster, video and presentation I held in class.
