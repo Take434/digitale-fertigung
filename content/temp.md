@@ -21,10 +21,10 @@ tags:
 		- [x] The Comparator logic
 		- [x] The FP2840 Chip
 		- [x] The 60pin Connector
-- [ ] Actually flipping some dots (testing)
-- [ ] Designing the Boards
-	- [ ] Controller Board
-	- [ ] Decoder Board
+- [x] Actually flipping some dots (testing)
+- [x] Designing the Boards
+	- [x] Controller Board
+	- [x] Decoder Board
 - [ ] Manufacturing the Controller Board
 - [ ] The Joystick and Case
 - [ ] The Code
