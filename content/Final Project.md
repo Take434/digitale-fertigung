@@ -4,8 +4,11 @@ draft: false
 tags:
   -
 ---
-![[IMG_3774.png]]# Poster
+# Poster
 
+
+# Video
+![[final-pres.mov]]
 # Presentation
 This is the presentation I held in front of the class to explain my project to everyone.
 Everything in it will be explained on this page, it is only included for completeness.
@@ -21,6 +24,8 @@ Case Stand Fusion Archive:
 ![[flipdot-stand.f3d]]
 Case design for laser cutting:
 ![[box-all-correct.dxf]]
+Joystick case: 
+![[flipdot-joystick.f3d]]
 # The Idea (again)
 This is just a quick reiteration of my final project Idea. The full description can be found in [[Final Project Idea]].
 
@@ -171,11 +176,132 @@ First I assembled my components. Then I got started soldering.
 
 ![[IMG_3793(1).png]]
 I started by soldering the Chip onto the board since this is definitely the hardest part. After I managed to install that correctly I soldered everything else. While soldering I tested the connections with my multimeter. As you can see the GPIO Expander had not yet arrived, I soldered that at home.  
-# The Joystick and Case
+# The Joystick
+Another component of the project is the joystick. I had picked out a joystick and exposed 5 pins on the controller board according to its specifications. But then Jan offered me an old joystick he still had on hand which allowed me to start testing earlier so I took that one.
+![[IMG_3797.png]]
+Here I have connected the Joystick to the controller board using the 5 exposed pins. I then tested the joystick and while the two analog outputs for the stick position worked perfectly I noticed that the button press did not register. I then found out that this was because this joystick did not have an internal pull down resistor.
 
+![[IMG_3799.png]]
+I took the liberty of installing one myself using some parts I had lying around at home and after that the joystick worked flawlessly.
+
+I then went ahead and designed a case for the joystick in Fusion360
+![[Pasted image 20260216173528.png]]
+![[Pasted image 20260216173811.png]]
+To 3D print the case I split it in two in the Bambulab Slicer. I then printed it at home on my Bambulab A1 and assembled it in the Fab lab, using the Dremel widen the holes to fit the pins.
+
+<div style="width: 100%; height: 400px; background-color: gray; display: flex">
+<div style="margin: auto; color: black; font-weight: 800;">Image of the Joystick in the case</div>
+</div>
+I had to remove some of the cover so that it would not hit the case.
+# The Case
+![[Pasted image 20260216174229.png]]
+With all other hardware components finished I set out to make the case. It is based on a basic box from Makercase (https://www.makercase.com/basicBox) that fits the display with enough space beneath for the other hardware components. I also added a slit to the back plate to accommodate the power supply and joystick wires.
+
+I then Laser cut the box on the large laser cutter in the Fab Lab.
+![[IMG_3806.png]]
+This is a first test cut of the backplate.
+
+<div style="width: 100%; height: 400px; background-color: gray; display: flex">
+<div style="margin: auto; color: black; font-weight: 800;">Good image of the case</div>
+</div>
+
+After that I set out to create spacers that would hold the display up and allow for space underneath where the circuits are mounted. These are just blocks with the correctly measured dimensions. I also created nice angled feet for the case so that it could stand upright.
+![[Unbenannt.png]]
+
+All of this was then imported into the Bambulab Slicer and printed at home.
+![[Pasted image 20260216175110.png]]
+![[IMG_3812.png]]
 # The Code
+The following code omits most of the actual implementation to highlight the whole functionality, here is the full code:
+![[digiFab_Final.ino]]
 
-# Problems with the Decoder Board, Changes for v2
+```c++
+#include <SoftWire.h>
+... // a lot of variable setup
 
-# Problems with v2, Changes for v3
+void setup() { ... } //pinMode setup and configuring GPIO Expander for output vie wire
 
+void loop() {
+  if(isFlipping && millis() - flipStart > flipDuration) {
+    isFlipping = false;
+    resetFlipLogic();
+  }
+
+  if (buttonPressed()) {
+    flipADot();
+  }
+  
+  handleJoystick();
+}
+
+//uses the GPIO Expander to flip a dot to black or to yellow
+void flipADot() { ... } 
+
+// resets the signals to the decoder board so that there is only 
+// an impulse to the flip dot module
+void resetFlipLogic() { ... } 
+
+// checks if a button is pressed returning true or false
+bool buttonPressed() { ... }
+
+// checks joystick potentiometer inputs
+void handleJoystick() { ... }
+
+// helper for checking joystick inputs
+void resetLastStickInputs() { ... }
+```
+
+This was the basic structure of the first code draft I wrote. I wanted to be able to "select" a specific dot on the display using the joystick and then flip it by pressing the joystick. The full code has a lot of state needed to debounce the button and handle joystick input correctly. Sadly, because of different hardware problems this code never worked.
+
+# Problems 
+As you might have noticed my final product can not play snake. In the following I will detail the different problems I encountered while developing this piece and how I tried to fix them.
+## The GPIO Expander
+The first thing I noticed was with the GPIO Expander. After it had finally arrived I soldered it on at home and wanted to test it. But I could not establish an I2C connection. I started debugging this and found that it advised to install a small capacitor right before the VC pin of the expander.
+
+![[IMG_3808.png]]
+Luckily I had one lying around, but sadly this did not fix the issues.
+
+After a lot of investigating I noticed that I had somehow swapped the `SDA` and `SCL` pins on the ATmega. While I could have crossed them using some wires and a knife, I was to afraid to ruin the board. Thus I elected to use the [SoftWire](https://docs.arduino.cc/libraries/softwire/) library allowing me to define any analog port as the two I2C ports. While this is slower than the hardware based I2C of the ATmega it worked great and I could address the GPIO Expander without problems.
+## The Decoder Board
+So, lets look back at the decoder board I designed and ordered. After it had arrived I started testing it together with the controller board I had made.
+
+![[IMG_3803.png]]
+Using the multimeter and a quick Arduino sketch to set different inputs high I tested the decoder logic. The five decoder I had used to build my 5 to 32 decoder worked perfectly and I could address each individual MOSFET as planned. But the signals on the 60pin connector (or where it should have been installed) were wrong.
+
+After some investigating with the multimeter I found out that the MOSFETs I had used because they were offered for assembly by JLCPCB were open drain, meaning that they would cut the connection when powered not the other way around.
+
+Sadly this meant that I could not use my decoder board. I needed the MOSFETs to work the opposite way they did and because I used decoders there was no way to power all MOSFETs and not power those I needed to emit the signal. I could not invert my logic and there was no time to order another board off of JLCPCB, since this one took nearly two weeks to arrive.
+
+Because of this I had to give up on powering the whole display. Instead I resolved to use the motor driver from the earlier tests to power two rows. So the Flipdot Chip, the FP2840, would power the columns as planned and the motor driver would address the first two rows, allowing me to flip all the dots of the first two rows.
+## The FP2840
+I had always been too afraid to test the chip on the Flipdot module itself, instead making sure to follow the datasheet exactly. This was because the chip is no longer produced and should I fry it, there would be no way to power the display.
+
+So when it was time to test everything together with the chip installed in the board I had made sure everything else worked perfectly. But the dot would not flip.
+Investigating with the multimeter I noticed, that the voltage of the 6 input pins was around 0.4 while I was supplying 5V at the 60pin connector. At first I assumed my Flipdot module was broken, the chip had a datasheet and it specified for the inputs. I was so confused that I even wrote an email to Rainer Radow, who manages the blog that was very helpful until now.
+
+But then I noticed that the module selection logic, which uses an 8-bit comparator to determine which Flipdot module should be activated, provides a lot of resistance. I needed to have a logic level of 21 to 24 Volts at the 60pin connector so that 5V actually reached the chip. This was not mentioned anywhere I had found before, and so now I had no way to provide this amount of voltage.
+
+I then started to panic a little, without the chip I could not drive the columns of the matrix and would not be able to demonstrate any functionality. But I came up with an alternative, what if I used multiple MOSFETs on a breadboard to mimic the chips functionality and drive at least two columns. This would allow me to demonstrate the joystick and flip functions of my project.
+
+![[IMG_3814.png]]
+Here I am testing two MOSFETS so that I might drive one dot and switch the value of pin between 12V and GND.
+
+![[IMG_3816.png]]
+This Setup is the same principle but with 8 MOSFETs to switch the value of four rows.
+
+BUT, since the Lab only had N Channel MOSFETs and I was running out of time, this did not work, as there was no way for me to provide a positive signal to the pin. For that I would have needed a P Channel MOSFET which was not available to me.
+
+# The Result![[IMG_3820.png]]
+In the end I had no choice but to use the motor driver for bot the row and the column, this allowed me to switch exactly one dot. I could now flip the first dot each time the joystick was pressed.
+# Lessons Learned
+In conclusion, while this project was very frustrating for me and I dont like that I have not managed to get at least four dots working, I have actually learned a lot.
+
+My biggest mistake was not testing the display thoroughly enough, had I noticed the necessity for the 24V logic level at the 60pin connector earlier, I could have ordered 6 P-Channel MOSFETs and driven the chip with a Lab power supply. Since I was too afraid to test the chip and assumed I had understood it, I had no time to fix this mistake.
+
+Another general mistake was starting too late. I should have tested the whole Flipdot module long before the end of the course so that I had time to reorder the decoder module and fix the errors I had made before.
+
+And I learned that I should triple and quadruple check pin assignments with the actual datasheets. Although I could fix the I2C issues in software, this was entirely avoidable had I paid more attention.
+# Future Work
+Now that I have come this far with the Flipdot module I will definitely finish developing it. I believe that I have now made nearly every mistake possible, at least regarding the Flipdot module and I would like to create a whole new board allowing me to drive the complete display.
+
+I will play snake on this thing, and if it is the last thing I do. 
